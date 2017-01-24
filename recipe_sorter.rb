@@ -21,7 +21,7 @@ class RecipeBox < Array
 				cooktime = line.select(/,[.]+,([\d\w\s]+),/)
 				servings = line.select(/,([\d]+)$/)
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				self << newRecipe 
+				box << newRecipe 
 			end
 		end
 		f = File.open("recipes_pipe", "r") do |f|
@@ -31,7 +31,7 @@ class RecipeBox < Array
 				cooktime = line.select(/|[.]+|([\d\w\s]+)|/)
 				servings = line.select(/|([\d]+)$/)
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				self << newRecipe
+				box << newRecipe
 			end
 		end
 		f = File.open("recipes_space", "r") do |f|
@@ -41,21 +41,14 @@ class RecipeBox < Array
 				cooktime = line.select(/\s[.]+\s'([\d\w\s]+)'\s/)
 				servings = line.select(/\s([\d]+)$/)
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				self << newRecipe
+				box << newRecipe
 			end
 		end
 	end
 
 	
 
-	def sortRecipes(attribute)
-		if self.empty?
-			puts "Box is empty dumbass."
-		else
-			response = RestClient.post 'http://localhost:8080/sort', {:params => {:attribute => attribute}} 
-			puts response				
-		end
-	end
+
 
 	def rsort(attribute)
 		if attribute == :name
@@ -115,4 +108,19 @@ post '/sort' do
 	box.rsort(attribute)
 	box.each do each.show
 	end
+end
+
+post 'recipe' do
+	if params.has_key?('name','category','cooktime','servings')
+		box.add(params[:name],params[:category],params[:servings])
+
+end
+
+get 'recipes' do
+end
+
+get '/recipes/:category/name' do
+end
+
+get '/recipes/cook_time' do
 end
