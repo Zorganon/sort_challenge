@@ -11,6 +11,7 @@ class BoxClient
 
 	def getRecipes
 		response = RestClient.get 'http://localhost:8080/get_recipes'
+		puts reponse
 	end
 
 	def sortRecipes(attribute)
@@ -28,5 +29,6 @@ class BoxClient
 		cooktime = recipeString.select(/|([\w\s\d]+)|[.]+$/)
 		servings = recipeString.select(/|([\w\s\d]+)$/)
 		response = Restclient.post 'http://localhost:8080/recipe', {:params => {:name => name, :category => category, :cooktime => cooktime, :servings => servings}}
+		puts response
 	end
 end

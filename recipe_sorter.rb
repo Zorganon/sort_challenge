@@ -95,16 +95,17 @@ post '/empty_box' do
 	"k it's empty now"
 end
 
-get '/get_recipes' do	
+get '/get_recipes' do
+	return_message = {}
 	"I'm adding all the recipes to the box now"
-	box.loadRecipes
-	
+	box.loadRecipes ? return_message[:status] = "they're in there!" : return_message[:status]="didn't work, something went wrong"	
 end
 
 post '/sort' do
 	attribute = JSON.parse(params[:attribute], :symbolize_names => true)
 	box.rsort(attribute)
-	box.each do each.show
+	box.each do 
+		each.show
 	end
 end
 
@@ -112,8 +113,7 @@ post 'recipe' do
 	jdata = JSON.parse(params[:data], :symbolize_names => true)
 	if jdata.has_key?('name','category','cooktime','servings')
 		box.add(jdata[:name],jdata[:category],jdata[:cooktime],jdata[:servings]) ? return_message[:status] = 'success' : return_message[:status] = 'failure'
-
-
+	end
 end
 
 get 'recipes' do
