@@ -6,9 +6,13 @@
 #RecipeArray should store recipes as named Hashes
 
 require 'sinatra'
+require 'json'
+
+
 
 #Recipe Box Class
 class RecipeBox < Array
+	#require 'rest-client'
 
 	def getRecipes
 		response = RestClient.get 'http://localhost:8080/get_recipes'
@@ -35,8 +39,10 @@ class RecipeBox < Array
 		else
 			return "bad search criteria"
 		end
+	end
 end
 	
+box = RecipeBox.new
 
 #Recipe Class	
 class Recipe	
@@ -51,18 +57,60 @@ class Recipe
 
 	def show
 		puts "#{@name} - #{@category} - takes #{@cooktime} - Serves #{@servings}"
+	end
 end
 
-##### API stuff #####
+
+##### sinatra stuff #####
 set :port, 8080
 set :environment, :production
 
+get '/' do
+	"hello dan"
+end
+
+post '/empty_box' do
+	box.clear
+	"k it's empty now"
+end
+
 get '/get_recipes' do	
+	"I'm adding all the recipes to the box now"
+	f = File.open("recipes_comma", "r") do |f|
+		f.each_line do |line|
+			name = line.select(/^([\w\s]+),/m)
+			category = line.select(/,([\w\s]+),/)
+			cooktime = line.select(/,[.]+,([\d\w\s]+),/)
+			servings = line.select(/,([\d]+)$/)
+			newRecipe = Recipe.new(name,category,cooktime,servings)
+			box << newRecipe 
+		end
+	end
+	f = File.open("recipes_pipe", "r") do |f|
+		f.each_line do |line|
+			name = line.select(/^([\w\s]+)|/m)
+			category = line.select(/|([\w\s]+)|/)
+			cooktime = line.select(/|[.]+|([\d\w\s]+)|/)
+			servings = line.select(/|([\d]+)$/)
+			newRecipe = Recipe.new(name,category,cooktime,servings)
+			box << newRecipe
+		end
+	end
+	f = File.open("recipes_space", "r") do |f|
+		f.each_line do |line|
+			name = line.select(/^'([\w\s]+)'\s/m)
+			category = line.select(/\s([\w\s]+)\s/)
+			cooktime = line.select(/\s[.]+\s'([\d\w\s]+)'\s/)
+			servings = line.select(/\s([\d]+)$/)
+			newRecipe = Recipe.new(name,category,cooktime,servings)
+			box << newRecipe
+		end
+	end
 end
 
 post '/sort' do
 	attribute = JSON.parse(params[:attribute], :symbolize_names => true)
-	recipe_box.rsort(attribute)
-	recipe_box.each do each.show
+	box.rsort(attribute)
+	box.each do each.show
 	end
 end
