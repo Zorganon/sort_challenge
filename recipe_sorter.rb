@@ -7,8 +7,6 @@
 
 require 'sinatra'
 
-
-
 #Recipe Box Class
 class RecipeBox < Array
 	#require 'rest-client'
@@ -46,10 +44,6 @@ class RecipeBox < Array
 		end
 	end
 
-	
-
-
-
 	def rsort(attribute)
 		if attribute == :name
 			self.sort_by{|x,y| x.name <=> y.name}
@@ -62,6 +56,10 @@ class RecipeBox < Array
 		else
 			return "bad search criteria"
 		end
+	end
+
+	def addRecipe(name,category,cooktime,servings)
+		box << Recipe.new(name, category, cooktime, servings)
 	end
 end
 	
@@ -111,8 +109,10 @@ post '/sort' do
 end
 
 post 'recipe' do
-	if params.has_key?('name','category','cooktime','servings')
-		box.add(params[:name],params[:category],params[:servings])
+	jdata = JSON.parse(params[:data], :symbolize_names => true)
+	if jdata.has_key?('name','category','cooktime','servings')
+		box.add(jdata[:name],jdata[:category],jdata[:cooktime],jdata[:servings]) ? return_message[:status] = 'success' : return_message[:status] = 'failure'
+
 
 end
 

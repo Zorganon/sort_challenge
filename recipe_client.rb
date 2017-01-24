@@ -21,4 +21,12 @@ class BoxClient
 			puts response				
 		end
 	end
+
+	def addRecipe(recipeString)
+		name = recipeString.select(/^([\w\s\d]+)|/)
+		category = recipeString.select(/|([\w\s\d]+)|/)
+		cooktime = recipeString.select(/|([\w\s\d]+)|[.]+$/)
+		servings = recipeString.select(/|([\w\s\d]+)$/)
+		response = Restclient.post 'http://localhost:8080/recipe', {:params => {:name => name, :category => category, :cooktime => cooktime, :servings => servings}}
+	end
 end
