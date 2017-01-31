@@ -1,4 +1,3 @@
-
 require 'json'
 require 'rest-client'
 
@@ -10,8 +9,8 @@ class BoxClient
 	end
 
 	def getRecipes
-		response = RestClient.get 'http://localhost:8080/get_recipes'
-		puts reponse
+		response = RestClient.get 'http://localhost:8080/get_recipes', {params: {:name => @name}}
+		puts response
 	end
 
 	def sortRecipes(attribute)
@@ -29,6 +28,11 @@ class BoxClient
 		cooktime = recipeString.select(/|([\w\s\d]+)|[.]+$/)
 		servings = recipeString.select(/|([\w\s\d]+)$/)
 		response = Restclient.post 'http://localhost:8080/recipe', {:params => {:name => name, :category => category, :cooktime => cooktime, :servings => servings}}
+		puts response
+	end
+
+	def emptyBox
+		response = RestClient.post 'http://localhost:8080/empty_box', data: {}.to_json, accept: :json
 		puts response
 	end
 end

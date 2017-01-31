@@ -6,12 +6,17 @@
 #RecipeArray should store recipes as named Hashes
 
 require 'sinatra'
+require 'json'
 
 #Recipe Box Class
 class RecipeBox < Array
 	#require 'rest-client'
 
-	def LoadRecipes
+	def initialize
+		@sorted_by = "not sorted"
+	end
+
+	def loadRecipes		
 		f = File.open("recipes_comma", "r") do |f|
 			f.each_line do |line|
 				name = line.select(/^([\w\s]+),/m)
@@ -19,7 +24,7 @@ class RecipeBox < Array
 				cooktime = line.select(/,[.]+,([\d\w\s]+),/)
 				servings = line.select(/,([\d]+)$/)
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				box << newRecipe 
+				box << newRecipe
 			end
 		end
 		f = File.open("recipes_pipe", "r") do |f|
@@ -31,7 +36,7 @@ class RecipeBox < Array
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				box << newRecipe
 			end
-		end
+		end		
 		f = File.open("recipes_space", "r") do |f|
 			f.each_line do |line|
 				name = line.select(/^'([\w\s]+)'\s/m)
@@ -91,14 +96,18 @@ get '/' do
 end
 
 post '/empty_box' do
-	box.clear
-	"k it's empty now"
+	return_message = {}
+	box.clear ? {status: 'success'}.to_json : {status: 'fail'}.to_json
 end
 
 get '/get_recipes' do
 	return_message = {}
-	"I'm adding all the recipes to the box now"
-	box.loadRecipes ? return_message[:status] = "they're in there!" : return_message[:status]="didn't work, something went wrong"	
+	if box.loadRecipes
+	 return_message[:status] = 'they are not in there!'
+	else
+		return_message[:status]= 'no work, something went wrong'
+	end
+	return_message.to_json
 end
 
 post '/sort' do
