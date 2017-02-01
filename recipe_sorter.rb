@@ -19,32 +19,32 @@ class RecipeBox < Array
 	def loadRecipes		
 		f = File.open("recipes_comma", "r") do |f|
 			f.each_line do |line|
-				name = line.select(/^([\w\s]+),/m)
-				category = line.select(/,([\w\s]+),/)
-				cooktime = line.select(/,[.]+,([\d\w\s]+),/)
-				servings = line.select(/,([\d]+)$/)
+				name = line[/^([\w\s]+),/]
+				category = line[/,([\w\s]+),/]
+				cooktime = line[/,[.]+,([\d\w\s]+),/]
+				servings = line[/,([\d]+)$/]
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				box << newRecipe
+				self << newRecipe
 			end
 		end
 		f = File.open("recipes_pipe", "r") do |f|
 			f.each_line do |line|
-				name = line.select(/^([\w\s]+)|/m)
-				category = line.select(/|([\w\s]+)|/)
-				cooktime = line.select(/|[.]+|([\d\w\s]+)|/)
-				servings = line.select(/|([\d]+)$/)
+				name = line[/^([\w\s]+)|/m]
+				category = line[/|([\w\s]+)|/]
+				cooktime = line[/|[.]+|([\d\w\s]+)|/]
+				servings = line[/|([\d]+)$/]
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				box << newRecipe
+				self << newRecipe
 			end
 		end		
 		f = File.open("recipes_space", "r") do |f|
 			f.each_line do |line|
-				name = line.select(/^'([\w\s]+)'\s/m)
-				category = line.select(/\s([\w\s]+)\s/)
-				cooktime = line.select(/\s[.]+\s'([\d\w\s]+)'\s/)
-				servings = line.select(/\s([\d]+)$/)
+				name = line[/^'([\w\s]+)'\s/]
+				category = line[/\s([\w\s]+)\s/]
+				cooktime = line[/\s[.]+\s'([\d\w\s]+)'\s/]
+				servings = line[/\s([\d]+)$/]
 				newRecipe = Recipe.new(name,category,cooktime,servings)
-				box << newRecipe
+				self << newRecipe
 			end
 		end
 	end
@@ -55,7 +55,7 @@ class RecipeBox < Array
 		elsif attribute == :category
 			self.sort_by{|x,y| x.category <=> y.category}
 		elsif attribute == :cooktime
-			self.sort_by{|x,y| x.cooktime.select(/[\d]{1,4}/) <=> y.cooktime.select(/[\d]{1,4}/)}
+			self.sort_by{|x,y| x.cooktime[/[\d]{1,4}/] <=> y.cooktime[/[\d]{1,4}/]}
 		elsif attribute == :servings
 			self.sort_by{|x,y| x.servings <=> y.servings}
 		else
@@ -103,7 +103,7 @@ end
 get '/get_recipes' do
 	return_message = {}
 	if box.loadRecipes
-	 return_message[:status] = 'they are not in there!'
+		return_message[:status] = 'they are in there!'
 	else
 		return_message[:status]= 'no work, something went wrong'
 	end

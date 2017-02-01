@@ -9,24 +9,20 @@ class BoxClient
 	end
 
 	def getRecipes
-		response = RestClient.get 'http://localhost:8080/get_recipes', {params: {:name => @name}}
+		response = RestClient.get 'http://localhost:8080/get_recipes'
 		puts response
 	end
 
 	def sortRecipes(attribute)
-		if self.empty?
-			puts "Box is empty dumbass."
-		else
-			response = RestClient.post 'http://localhost:8080/sort', {:params => {:attribute => attribute}} 
-			puts response				
-		end
+		response = RestClient.post 'http://localhost:8080/sort', {:params => {:attribute => attribute}} 
+		puts response						
 	end
 
 	def addRecipe(recipeString)
-		name = recipeString.select(/^([\w\s\d]+)|/)
-		category = recipeString.select(/|([\w\s\d]+)|/)
-		cooktime = recipeString.select(/|([\w\s\d]+)|[.]+$/)
-		servings = recipeString.select(/|([\w\s\d]+)$/)
+		name = recipeString[/^([\w\s\d]+)|/]
+		category = recipeString[/|([\w\s\d]+)|/]
+		cooktime = recipeString[/|([\w\s\d]+)|[.]+$/]
+		servings = recipeString[/|([\w\s\d]+)$/]
 		response = Restclient.post 'http://localhost:8080/recipe', {:params => {:name => name, :category => category, :cooktime => cooktime, :servings => servings}}
 		puts response
 	end
@@ -36,3 +32,5 @@ class BoxClient
 		puts response
 	end
 end
+
+box = BoxClient.new('box')
