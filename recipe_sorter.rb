@@ -118,14 +118,15 @@ post '/sort' do
 	end
 end
 
-post 'recipe' do
+post '/recipe' do
 	jdata = JSON.parse(params[:data], :symbolize_names => true)
 	if jdata.has_key?('name','category','cooktime','servings')
 		box.add(jdata[:name],jdata[:category],jdata[:cooktime],jdata[:servings]) ? return_message[:status] = 'success' : return_message[:status] = 'failure'
 	end
 end
 
-get 'recipes' do
+get '/recipes' do
+	box.first.show
 end
 
 get '/recipes/:category/name' do

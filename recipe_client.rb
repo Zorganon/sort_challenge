@@ -31,6 +31,10 @@ class BoxClient
 		response = RestClient.post 'http://localhost:8080/empty_box', data: {}.to_json, accept: :json
 		puts response
 	end
+
+	def firstRecipe
+		response = RestClient.get 'http://localhost:8080/recipes'
+		puts response
 end
 
 box = BoxClient.new('box')
