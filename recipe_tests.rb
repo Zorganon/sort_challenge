@@ -1,47 +1,45 @@
 ENV['RACK_ENV'] = 'test'
 
-require 'recipe_client.rb'
+require './recipe_client.rb'
 require 'test/unit'
 require 'rack/test'
 
 class RecipeTests < Test::Unit::TestCase
 	include Rack::Test::Methods
 
-	def app
-		sinatra::application
+	#def app
+	#	sinatra::application
+	#end
+
+	def test_client_not_nil
+		mybox = BoxClient.new('Dans box')
+
+		assert_not_equal(nil, mybox)
 	end
 
-	def test_box_creation
-		box = BoxClient.new('box')
-		box.getRecipes
+
+	def test_recipe_read_in
+		mybox = BoxClient.new('Dans box')
+		mybox.getRecipes
 		
-		assert_block( failure_message = "reading comma recipes failed") do
-			box.each do 
-				if each.include?("borscht")
-					return true
-				end
-			end
-		end
-		assert_block(failure_message = "reading pipe recipes failed") do
-			box.each do
-				if each.include?("cream cheese wontons")
-					return true
-				end
-			end
-		end
-		assert_block(failure_message = "reading space recipes failed") do
-			box.each do
-				if each.include?("whale biryani")
-					return true
-				end
-			end
-		end
+		assert_equal("they are in there!", mybox.message["status"])
+	end
+
+	def test_box_empties
+		mybox = BoxClient.new('Dans box')
+		mybox.getRecipes
+		mybox.emptyBox
+
+		assert_equal("success", mybox.message["status"])
 	end
 
 	def test_sort_by_name
-		box = BoxClient.new('box')
-		box.getRecipes
-		box.sortRecipes(name)
+		mybox = BoxClient.new('Dans box')
+		mybox.getRecipes
+		mybox.sortRecipes(name)
+		mybox.firstRecipe
+
+		assert_equal("apple pie", mybox.message["recipe"])
 	end
 
 end

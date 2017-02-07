@@ -66,7 +66,7 @@ class RecipeBox < Array
 	def addRecipe(name,category,cooktime,servings)
 		box << Recipe.new(name, category, cooktime, servings)
 	end
-end
+end #end of Recipe Box class #
 	
 
 #Recipe Class	
@@ -126,7 +126,9 @@ post '/recipe' do
 end
 
 get '/recipes' do
-	box.first.show
+	return_message = {}
+	return_message[:recipe] = box.first
+	return_message.to_json
 end
 
 get '/recipes/:category/name' do
