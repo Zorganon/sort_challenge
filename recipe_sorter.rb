@@ -50,14 +50,14 @@ class RecipeBox < Array
 	end
 
 	def rsort(attribute)
-		if attribute == :name
-			self.sort_by{|x,y| x.name <=> y.name}
-		elsif attribute == :category
-			self.sort_by{|x,y| x.category <=> y.category}
-		elsif attribute == :cooktime
-			self.sort_by{|x,y| x.cooktime[/[\d]{1,4}/] <=> y.cooktime[/[\d]{1,4}/]}
-		elsif attribute == :servings
-			self.sort_by{|x,y| x.servings <=> y.servings}
+		if attribute == "name"
+			self.sort {|x,y| x.name <=> y.name}
+		elsif attribute == "category"
+			self.sort {|x,y| x.category <=> y.category}
+		elsif attribute == "cooktime"
+			self.sort {|x,y| x.cooktime[/[\d]{1,4}/] <=> y.cooktime[/[\d]{1,4}/]}
+		elsif attribute == "servings"
+			self.sort {|x,y| x.servings <=> y.servings}
 		else
 			return "bad search criteria"
 		end
@@ -111,11 +111,12 @@ get '/get_recipes' do
 end
 
 post '/sort' do
-	attribute = JSON.parse(params[:attribute], :symbolize_names => true)
-	box.rsort(attribute)
-	box.each do 
-		each.show
-	end
+	return_message = {}
+	attribute = JSON.parse(params[:attribute])
+	box.rsort(attribute) ? return_message[:status] = "success" : return_message[:status] = "failure"
+	#box.each do 
+	#	each.show
+	#end	
 end
 
 post '/recipe' do
