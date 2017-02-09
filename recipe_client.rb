@@ -11,14 +11,14 @@ class BoxClient
 
 	def getRecipes
 		response = RestClient.get 'http://localhost:8080/get_recipes'
-		puts response
+		
 		@message = JSON.parse(response)
 	end
 
 	def sortRecipes(attribute)
 		response = RestClient.post 'http://localhost:8080/sort', data: {attribute: attribute}.to_json, accept: :json
-		puts response		
-		@message = JSON.parse(response, symbolize_names: true)
+
+		@message = JSON.parse(response)
 	end
 
 	def addRecipe(recipeString)
@@ -28,19 +28,19 @@ class BoxClient
 		cooktime = recipeString[/|([\w\s\d]+)|[.]+$/]
 		servings = recipeString[/|([\w\s\d]+)$/]
 		response = Restclient.post 'http://localhost:8080/recipe', {:params => {:name => name, :category => category, :cooktime => cooktime, :servings => servings}}
-		puts response
 		@message = JSON.parse(response)
+		puts @message
 	end
 
 	def emptyBox
 		response = RestClient.post 'http://localhost:8080/empty_box', data: {}.to_json, accept: :json
-		puts response
+		
 		@message = JSON.parse(response)
 	end
 
 	def firstRecipe
 		response = RestClient.get 'http://localhost:8080/recipes'
-		puts response
+		
 		@message = JSON.parse(response)
 	end
 end

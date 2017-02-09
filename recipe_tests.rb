@@ -22,7 +22,7 @@ class RecipeTests < Test::Unit::TestCase
 		mybox = BoxClient.new('Dans box')
 		mybox.getRecipes
 		
-		assert_equal("they are in there!", mybox.message["status"])
+		assert_equal("recipes loaded", mybox.message["status"])
 	end
 
 	def test_box_empties
@@ -30,16 +30,35 @@ class RecipeTests < Test::Unit::TestCase
 		mybox.getRecipes
 		mybox.emptyBox
 
-		assert_equal("success", mybox.message["status"])
+		assert_equal("empty success", mybox.message["status"])
 	end
 
 	def test_sort_by_name
 		mybox = BoxClient.new('Dans box')
+		mybox.emptyBox
 		mybox.getRecipes
 		mybox.sortRecipes('name')
 		
+		assert_equal("apple pie", mybox.message["recipe"])
+		mybox.emptyBox
+	end
 
-		#assert_equal("apple pie", mybox.message["recipe"])
+	def test_sort_by_category
+		mybox = BoxClient.new('Dans box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.sortRecipes('category')
+		
+		assert_equal("dessert", mybox.message["recipe"])
+	end
+
+	def test_sort_by_time
+		mybox = BoxClient.new('da box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.sortRecipes('cooktime')
+		
+		assert_equal("8", mybox.message["recipe"])
 	end
 
 end

@@ -21,14 +21,10 @@ class RecipeBox < Array
 		f = File.open("recipes_comma", "r") do |f|
 			f.each_line do |line|
 				recipe_array = line.split(",")
-				name = recipe_array[0]
-				category = recipe_array[1]
-				cooktime = recipe_array[2]
-				servings = recipe_array[3]
-				#name = line[/^([\w\s]+),/]
-				#category = line[/,([\w\s]+),/]
-				#cooktime = line[/,,([\d\w\s]+),/]
-				#servings = line[/,([\d]+)$/]
+				name = recipe_array[0].strip
+				category = recipe_array[1].strip
+				cooktime = recipe_array[2].strip
+				servings = recipe_array[3].strip
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -36,23 +32,21 @@ class RecipeBox < Array
 		f = File.open("recipes_pipe", "r") do |f|
 			f.each_line do |line|
 				recipe_array = line.split("|")
-				name = recipe_array[0]
-				category = recipe_array[1]
-				cooktime = recipe_array[2]
-				servings = recipe_array[3]
+				name = recipe_array[0].strip
+				category = recipe_array[1].strip
+				cooktime = recipe_array[2].strip
+				servings = recipe_array[3].strip
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
 		end		
 		f = File.open("recipes_space", "r") do |f|
 			f.each_line do |line|
-				recipe_array = []
-				recipe_array << line[/^'([\w\s]+)'\s([\w\s]+)\s'([\d\w\s]+)'\s([\d]+)$/i]
-				puts recipe_array
-				name = recipe_array[0]
-				category = recipe_array[1]
-				cooktime = recipe_array[2]
-				servings = recipe_array[3]
+				recipe_array = line.match(/^'([\w\s]+)'\s([\w\s]+)\s'([\d]{1,4})[\w\s]+'\s([\d]+)$/i).captures
+				name = recipe_array[0].strip
+				category = recipe_array[1].strip
+				cooktime = recipe_array[2].strip
+				servings = recipe_array[3].strip
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -61,14 +55,13 @@ class RecipeBox < Array
 
 	def rsort(attribute)
 		if attribute == "name"
-			self.last.show
-			#self.sort {|x,y| x.name <=> y.name}
+			self.sort! {|x,y| x.name <=> y.name}
 		elsif attribute == "category"
-			self.sort {|x,y| x.category <=> y.category}
+			self.sort! {|x,y| x.category <=> y.category}
 		elsif attribute == "cooktime"
-			self.sort {|x,y| x.cooktime[/[\d]{1,4}/] <=> y.cooktime[/[\d]{1,4}/]}
+			self.sort! {|x,y| x.cooktime <=> y.cooktime}
 		elsif attribute == "servings"
-			self.sort {|x,y| x.servings <=> y.servings}
+			self.sort! {|x,y| x.servings <=> y.servings}
 		else
 			return "bad search criteria"
 		end
@@ -92,8 +85,9 @@ class Recipe
 	end
 
 	def show
-		puts "#{@name} - #{@category} - takes #{@cooktime} - Serves #{@servings}"
+		"#{@name} - #{@category} - takes #{@cooktime} - Serves #{@servings}"
 	end
+
 end
 
 box = RecipeBox.new
@@ -108,15 +102,15 @@ end
 
 post '/empty_box' do
 	return_message = {}
-	box.clear ? {status: 'success'}.to_json : {status: 'fail'}.to_json
+	box.clear ? {status: 'empty success'}.to_json : {status: 'empty failed'}.to_json
 end
 
 get '/get_recipes' do
 	return_message = {}
 	if box.loadRecipes
-		return_message[:status] = 'they are in there!'
+		return_message[:status] = 'recipes loaded'
 	else
-		return_message[:status]= 'no work, something went wrong'
+		return_message[:status]= 'recipes not loaded'
 	end
 	return_message.to_json
 end
@@ -125,11 +119,10 @@ post '/sort' do
 	return_message = {}
 	jdata = JSON.parse(params[:data], symbolize_names: true)
 	attribute = jdata[:attribute]
-	box.rsort(attribute) ? return_message[:status] = "success" : return_message[:status] = "failure"
+	box.rsort(attribute) ? return_message[:status] = "sort success" : return_message[:status] = "sort failure"
+	puts "got one!" + box.first.send(attribute)
+	return_message[:recipe] = box.first.send(attribute)
 	return_message.to_json
-	#box.each do 
-	#	each.show
-	#end	
 end
 
 post '/recipe' do
@@ -141,7 +134,7 @@ end
 
 get '/recipes' do
 	return_message = {}
-	return_message[:recipe] = box.first
+	return_message[:recipe] = box.first.show
 	return_message.to_json
 end
 
