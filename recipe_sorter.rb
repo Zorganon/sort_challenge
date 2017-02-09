@@ -57,11 +57,11 @@ class RecipeBox < Array
 		if attribute == "name"
 			self.sort! {|x,y| x.name <=> y.name}
 		elsif attribute == "category"
-			self.sort! {|x,y| x.category <=> y.category}
+			self.sort! {|x,y| [x.category, x.name] <=> [y.category, y.name]}
 		elsif attribute == "cooktime"
 			self.sort! {|x,y| x.cooktime <=> y.cooktime}
 		elsif attribute == "servings"
-			self.sort! {|x,y| x.servings <=> y.servings}
+			self.sort! {|x,y| [x.servings, x.cooktime] <=> [y.servings, y.cooktime]}
 		else
 			return "bad search criteria"
 		end
@@ -75,6 +75,7 @@ class RecipeBox < Array
 		servings = recipe_array[3].strip
 		self << Recipe.new(name, category, cooktime, servings)
 	end
+
 end #end of Recipe Box class #
 	
 
@@ -97,9 +98,17 @@ end
 
 box = RecipeBox.new
 
-##### sinatra stuff #####
+######## sinatra stuff ##########
 set :port, 8080
 set :environment, :production
+
+helpers do
+	def tableRow(recipe)
+		"<tr><td>#{recipe.name}</td><td>#{recipe.category}</td><td>#{recipe.cooktime}</td><td>#{recipe.servings}</td></tr>"
+	end
+end
+
+######## controller area ##########
 
 get '/' do
 	"hello dan"
@@ -132,18 +141,35 @@ end
 post '/recipe' do
 	return_message = {}
 	jdata = JSON.parse(params[:data], :symbolize_names => true)
-	box.addRecipe(jdata[:recipe]) ? return_message[:status] = 'addition success' : return_message[:status] = 'addition failure'	
+	box.addRecipe(jdata[:recipe]) ? return_message[:status] = 'addition success' : return_message[:status] = 'addition failure'
 	return_message.to_json
 end
 
 get '/recipes' do
+	box.rsort('category')
+	erb :recipes_by_category
 	return_message = {}
 	return_message[:recipe] = box.first.show
+	for each in box do
+		puts each.show
+	end
 	return_message.to_json
 end
 
 get '/recipes/:category/name' do
+
 end
 
-get '/recipes/cook_time' do
+get '/recipes/cooktime' do
+end
+
+get '/recipes/category' do
+	box.rsort('category')
+	erb :recipe_by_category, :locals => {:box => box}
+end
+
+get '/recipes/name' do
+end
+
+get '/recipes/servings' do
 end

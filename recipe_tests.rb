@@ -11,21 +11,21 @@ class RecipeTests < Test::Unit::TestCase
 	#	sinatra::application
 	#end
 
-	def test_client_not_nil
+	def test1_client_not_nil
 		mybox = BoxClient.new('Dans box')
 
 		assert_not_equal(nil, mybox)
 	end
 
 
-	def test_recipe_read_in
+	def test2_recipe_read_in
 		mybox = BoxClient.new('Dans box')
 		mybox.getRecipes
 		
 		assert_equal("recipes loaded", mybox.message["status"])
 	end
 
-	def test_box_empties
+	def test3_box_empties
 		mybox = BoxClient.new('Dans box')
 		mybox.getRecipes
 		mybox.emptyBox
@@ -33,7 +33,7 @@ class RecipeTests < Test::Unit::TestCase
 		assert_equal("empty success", mybox.message["status"])
 	end
 
-	def test_sort_by_name
+	def test4_sort_by_name
 		mybox = BoxClient.new('Dans box')
 		mybox.emptyBox
 		mybox.getRecipes
@@ -43,7 +43,7 @@ class RecipeTests < Test::Unit::TestCase
 		mybox.emptyBox
 	end
 
-	def test_sort_by_category
+	def test5_sort_by_category
 		mybox = BoxClient.new('Dans box')
 		mybox.emptyBox
 		mybox.getRecipes
@@ -52,7 +52,7 @@ class RecipeTests < Test::Unit::TestCase
 		assert_equal("dessert", mybox.message["recipe"])
 	end
 
-	def test_sort_by_time
+	def test6_sort_by_time
 		mybox = BoxClient.new('da box')
 		mybox.emptyBox
 		mybox.getRecipes
@@ -61,7 +61,7 @@ class RecipeTests < Test::Unit::TestCase
 		assert_equal(8, mybox.message["recipe"])
 	end
 
-	def test_recipe_adding
+	def test7_recipe_adding
 		mybox = BoxClient.new('a box')
 		mybox.emptyBox
 		mybox.getRecipes
@@ -70,7 +70,7 @@ class RecipeTests < Test::Unit::TestCase
 		assert_equal("addition success", mybox.message["status"])
 	end
 
-	def test_recipe_add_and_sort
+	def test8_recipe_add_and_sort
 		mybox = BoxClient.new('a box')
 		mybox.emptyBox
 		mybox.getRecipes
@@ -79,4 +79,5 @@ class RecipeTests < Test::Unit::TestCase
 
 		assert_equal("aaa", mybox.message["recipe"])
 	end
+
 end

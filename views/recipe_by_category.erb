@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head>
+
+</head>
+<body>
+	<h1>Recipes as sorted by Category, then by Name</h1>
+	<div class="recipe-list">
+		<table>
+			<tbody>
+				<tr>
+					<th>Name |</th>
+					<th> Category |</th>
+					<th> Cooktime |</th>
+					<th> Servings</th>
+				</tr>				
+				<% for x in box %>
+					<%= tableRow(x) %>
+				<% end %>				
+			<tbody>	
+		</table>		
+	</div>
+</body>

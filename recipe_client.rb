@@ -38,4 +38,12 @@ class BoxClient
 		
 		@message = JSON.parse(response)
 	end
+
+	def showRecipesBy(attribute)
+		response = RestClient.get 'http://localhost:8080/recipes/#{attribute}'
+
+		@message = JSON.parse(response)
+	end
+
+
 end
