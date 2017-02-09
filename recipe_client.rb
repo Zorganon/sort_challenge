@@ -16,9 +16,9 @@ class BoxClient
 	end
 
 	def sortRecipes(attribute)
-		response = RestClient.post 'http://localhost:8080/sort', {:params => {:attribute => attribute}} 
-		puts response						
-		@message = JSON.parse(response)
+		response = RestClient.post 'http://localhost:8080/sort', data: {attribute: attribute}.to_json, accept: :json
+		puts response		
+		@message = JSON.parse(response, symbolize_names: true)
 	end
 
 	def addRecipe(recipeString)

@@ -2,6 +2,7 @@
 #categories are one word
 #no apostrophes in recipes
 #servings are not spelled out
+#cooktimes are in minutes
 
 #RecipeArray should store recipes as named Hashes
 
@@ -19,30 +20,39 @@ class RecipeBox < Array
 	def loadRecipes		
 		f = File.open("recipes_comma", "r") do |f|
 			f.each_line do |line|
-				name = line[/^([\w\s]+),/]
-				category = line[/,([\w\s]+),/]
-				cooktime = line[/,[.]+,([\d\w\s]+),/]
-				servings = line[/,([\d]+)$/]
+				recipe_array = line.split(",")
+				name = recipe_array[0]
+				category = recipe_array[1]
+				cooktime = recipe_array[2]
+				servings = recipe_array[3]
+				#name = line[/^([\w\s]+),/]
+				#category = line[/,([\w\s]+),/]
+				#cooktime = line[/,,([\d\w\s]+),/]
+				#servings = line[/,([\d]+)$/]
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
 		end
 		f = File.open("recipes_pipe", "r") do |f|
 			f.each_line do |line|
-				name = line[/^([\w\s]+)|/m]
-				category = line[/|([\w\s]+)|/]
-				cooktime = line[/|[.]+|([\d\w\s]+)|/]
-				servings = line[/|([\d]+)$/]
+				recipe_array = line.split("|")
+				name = recipe_array[0]
+				category = recipe_array[1]
+				cooktime = recipe_array[2]
+				servings = recipe_array[3]
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
 		end		
 		f = File.open("recipes_space", "r") do |f|
 			f.each_line do |line|
-				name = line[/^'([\w\s]+)'\s/]
-				category = line[/\s([\w\s]+)\s/]
-				cooktime = line[/\s[.]+\s'([\d\w\s]+)'\s/]
-				servings = line[/\s([\d]+)$/]
+				recipe_array = []
+				recipe_array << line[/^'([\w\s]+)'\s([\w\s]+)\s'([\d\w\s]+)'\s([\d]+)$/i]
+				puts recipe_array
+				name = recipe_array[0]
+				category = recipe_array[1]
+				cooktime = recipe_array[2]
+				servings = recipe_array[3]
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -51,7 +61,8 @@ class RecipeBox < Array
 
 	def rsort(attribute)
 		if attribute == "name"
-			self.sort {|x,y| x.name <=> y.name}
+			self.last.show
+			#self.sort {|x,y| x.name <=> y.name}
 		elsif attribute == "category"
 			self.sort {|x,y| x.category <=> y.category}
 		elsif attribute == "cooktime"
@@ -112,8 +123,10 @@ end
 
 post '/sort' do
 	return_message = {}
-	attribute = JSON.parse(params[:attribute])
+	jdata = JSON.parse(params[:data], symbolize_names: true)
+	attribute = jdata[:attribute]
 	box.rsort(attribute) ? return_message[:status] = "success" : return_message[:status] = "failure"
+	return_message.to_json
 	#box.each do 
 	#	each.show
 	#end	
