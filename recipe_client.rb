@@ -23,7 +23,7 @@ class BoxClient
 
 	def addRecipe(recipeString)
 		#takes a pipe delimited recipe
-		response = Restclient.post 'http://localhost:8080/recipe', data: {:recipe => recipeString}.to_json, accept: :json
+		response = RestClient.post 'http://localhost:8080/recipe', data: {:recipe => recipeString}.to_json, accept: :json
 		@message = JSON.parse(response)
 	end
 

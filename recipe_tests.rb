@@ -62,12 +62,21 @@ class RecipeTests < Test::Unit::TestCase
 	end
 
 	def test_recipe_adding
-		mybox = BoxClient.new('da box')
+		mybox = BoxClient.new('a box')
 		mybox.emptyBox
 		mybox.getRecipes
-		mybox.addRecipe("test recipe|aaa|5 minutes|9")
+		mybox.addRecipe('test recipe|aaa|5 minutes|9')
 
-		assert_equal("addition successful", mybox.message["status"])
+		assert_equal("addition success", mybox.message["status"])
 	end
 
+	def test_recipe_add_and_sort
+		mybox = BoxClient.new('a box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.addRecipe('test recipe|aaa|5 minutes|9')
+		mybox.sortRecipes('category')
+
+		assert_equal("aaa", mybox.message["recipe"])
+	end
 end
