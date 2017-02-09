@@ -58,7 +58,16 @@ class RecipeTests < Test::Unit::TestCase
 		mybox.getRecipes
 		mybox.sortRecipes('cooktime')
 		
-		assert_equal("8", mybox.message["recipe"])
+		assert_equal(8, mybox.message["recipe"])
+	end
+
+	def test_recipe_adding
+		mybox = BoxClient.new('da box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.addRecipe("test recipe|aaa|5 minutes|9")
+
+		assert_equal("addition successful", mybox.message["status"])
 	end
 
 end

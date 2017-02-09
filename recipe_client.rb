@@ -23,13 +23,8 @@ class BoxClient
 
 	def addRecipe(recipeString)
 		#takes a pipe delimited recipe
-		name = recipeString[/^([\w\s\d]+)|/]
-		category = recipeString[/|([\w\s\d]+)|/]
-		cooktime = recipeString[/|([\w\s\d]+)|[.]+$/]
-		servings = recipeString[/|([\w\s\d]+)$/]
-		response = Restclient.post 'http://localhost:8080/recipe', {:params => {:name => name, :category => category, :cooktime => cooktime, :servings => servings}}
+		response = Restclient.post 'http://localhost:8080/recipe', data: {:recipe => recipeString}.to_json, accept: :json
 		@message = JSON.parse(response)
-		puts @message
 	end
 
 	def emptyBox

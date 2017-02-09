@@ -23,7 +23,7 @@ class RecipeBox < Array
 				recipe_array = line.split(",")
 				name = recipe_array[0].strip
 				category = recipe_array[1].strip
-				cooktime = recipe_array[2].strip
+				cooktime = recipe_array[2].match(/[\d]+/).to_s.to_i
 				servings = recipe_array[3].strip
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
@@ -34,7 +34,7 @@ class RecipeBox < Array
 				recipe_array = line.split("|")
 				name = recipe_array[0].strip
 				category = recipe_array[1].strip
-				cooktime = recipe_array[2].strip
+				cooktime = recipe_array[2].match(/[\d]+/).to_s.to_i
 				servings = recipe_array[3].strip
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
@@ -42,11 +42,11 @@ class RecipeBox < Array
 		end		
 		f = File.open("recipes_space", "r") do |f|
 			f.each_line do |line|
-				recipe_array = line.match(/^'([\w\s]+)'\s([\w\s]+)\s'([\d]{1,4})[\w\s]+'\s([\d]+)$/i).captures
-				name = recipe_array[0].strip
-				category = recipe_array[1].strip
-				cooktime = recipe_array[2].strip
-				servings = recipe_array[3].strip
+				recipe_array = line.match(/^'([\w\s]+)'\s([\w\s]+)\s'([\d]{0,5})[\w\s]+'\s([\d]+)$/i).captures
+				name = recipe_array[0].to_s.strip
+				category = recipe_array[1].to_s.strip
+				cooktime = recipe_array[2].to_s.to_i
+				servings = recipe_array[3].to_s.strip
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -67,8 +67,13 @@ class RecipeBox < Array
 		end
 	end
 
-	def addRecipe(name,category,cooktime,servings)
-		box << Recipe.new(name, category, cooktime, servings)
+	def addRecipe(recipeString)
+		recipe_array = recipeString.split("|")
+		name = recipe_array[0].strip
+		category = recipe_array[1].strip
+		cooktime = recipe_array[2].match(/[\d]+/).to_s.to_i
+		servings = recipe_array[3].strip
+		self << Recipe.new(name, category, cooktime, servings)
 	end
 end #end of Recipe Box class #
 	
@@ -120,16 +125,15 @@ post '/sort' do
 	jdata = JSON.parse(params[:data], symbolize_names: true)
 	attribute = jdata[:attribute]
 	box.rsort(attribute) ? return_message[:status] = "sort success" : return_message[:status] = "sort failure"
-	puts "got one!" + box.first.send(attribute)
 	return_message[:recipe] = box.first.send(attribute)
 	return_message.to_json
 end
 
 post '/recipe' do
+	return_message = {}
 	jdata = JSON.parse(params[:data], :symbolize_names => true)
-	if jdata.has_key?('name','category','cooktime','servings')
-		box.add(jdata[:name],jdata[:category],jdata[:cooktime],jdata[:servings]) ? return_message[:status] = 'success' : return_message[:status] = 'failure'
-	end
+	box.addRecipe(jdata[:recipe]) ? return_message[:status] = 'addition success' : return_message[:status] = 'addition failure'	
+	return_message.to_json
 end
 
 get '/recipes' do
