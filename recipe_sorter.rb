@@ -59,7 +59,7 @@ class RecipeBox < Array
 		elsif attribute == "category"
 			self.sort! {|x,y| [x.category, x.name] <=> [y.category, y.name]}
 		elsif attribute == "cooktime"
-			self.sort! {|x,y| x.cooktime <=> y.cooktime}
+			self.sort! {|x,y| x.cooktime.to_i <=> y.cooktime.to_i}
 		elsif attribute == "servings"
 			self.sort! {|x,y| [x.servings, x.cooktime] <=> [y.servings, y.cooktime]}
 		else
@@ -146,30 +146,43 @@ post '/recipe' do
 end
 
 get '/recipes' do
-	box.rsort('category')
-	erb :recipes_by_category
 	return_message = {}
+	box.rsort('category')
+	erb :recipes_by_category, :locals => {:box => box}
 	return_message[:recipe] = box.first.show
-	for each in box do
-		puts each.show
-	end
 	return_message.to_json
 end
 
-get '/recipes/:category/name' do
-
+get '/recipes/only/:category' do
+	subBox = []
+	for x in box
+		if x.category == params[:category]
+			subBox << x
+		end
+	end
+	erb :sorted_recipes, :locals => {:category => params[:category], :box => subBox}	
 end
 
 get '/recipes/cooktime' do
+	cat = "cooktime"
+	box.rsort(cat)
+	erb :sorted_recipes, :locals => {:box => box, :category => cat}
 end
 
 get '/recipes/category' do
+	cat = "category"
 	box.rsort('category')
-	erb :recipe_by_category, :locals => {:box => box}
+	erb :sorted_recipes, :locals => {:box => box, :category => cat}
 end
 
 get '/recipes/name' do
+	cat = "name"
+	box.rsort('name')
+	erb :sorted_recipes, :locals => {:box => box, :category => cat}
 end
 
 get '/recipes/servings' do
+	cat = "servings"
+	box.rsort('servings')
+	erb :sorted_recipes, :locals => {:box => box, :category => cat}
 end
