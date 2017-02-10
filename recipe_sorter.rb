@@ -160,18 +160,14 @@ end
 ####### test 9 hits these
 get '/output/:id' do
 	attribute = params[:id]
-	puts attribute
 	return_message = {}
-	if attribute == 1
-		puts "option 1 opened"
+	if attribute == "1"
 		box.doubleSort('category','name')
 		return_message[:status] = 'category and name'
-	elsif attribute == 2
-		puts "option 2 opened"
+	elsif attribute == "2"
 		box.rsort('cooktime')
 		return_message[:status] = "cooktime"
-	elsif attribute == 3
-		puts "option 3 opened"
+	elsif attribute == "3"
 		box.doubleSort('servings','cooktime')
 		return_message[:status] = "servings and cooktime"
 	end
@@ -194,9 +190,7 @@ end
 
 get '/recipes/:attribute' do
 	return_message = {}
-	attribute = ""
 	attribute = params[:attribute]
-	puts attribute
 	box.rsort(attribute)
 	erb :sorted_recipes, :locals => {:box => box, :attribute => params[:attribute]}
 	return_message[:status] = "#{attribute} sort view loaded"

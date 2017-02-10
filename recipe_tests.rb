@@ -107,5 +107,22 @@ class RecipeTests < Test::Unit::TestCase
 		assert_equal("servings and cooktime", mybox.message["status"])
 	end
 
+	def test12_sort_by_params_name
+		mybox = BoxClient.new('a box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.showRecipesBy('name')
+
+		assert_equal("name sort view loaded", mybox.message["status"])
+	end
+
+	def test12_sort_by_params_name
+		mybox = BoxClient.new('a box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.showRecipesBy('name')
+
+		assert_equal("name sort view loaded", mybox.message["status"])
+	end
 
 end
