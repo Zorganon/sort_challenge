@@ -80,4 +80,32 @@ class RecipeTests < Test::Unit::TestCase
 		assert_equal("aaa", mybox.message["recipe"])
 	end
 
+	def test9_hits_output_view_1
+		mybox = BoxClient.new('a box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.outputView(1)
+
+		assert_equal("category and name", mybox.message["status"])
+	end
+
+	def test10_hits_output_view_2
+		mybox = BoxClient.new('a box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.outputView(2)
+
+		assert_equal("cooktime", mybox.message["status"])
+	end
+
+	def test11_hits_output_view_3
+		mybox = BoxClient.new('a box')
+		mybox.emptyBox
+		mybox.getRecipes
+		mybox.outputView(3)
+
+		assert_equal("servings and cooktime", mybox.message["status"])
+	end
+
+
 end

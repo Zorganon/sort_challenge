@@ -67,6 +67,10 @@ class RecipeBox < Array
 		end
 	end
 
+	def doubleSort(attribute1, attribute2)
+		self.sort! {|x,y| [x.send(attribute1), x.send(attribute2)] <=> [y.send(attribute1), y.send(attribute2)]}		
+	end
+
 	def addRecipe(recipeString)
 		recipe_array = recipeString.split("|")
 		name = recipe_array[0].strip
@@ -148,10 +152,35 @@ end
 get '/recipes' do
 	return_message = {}
 	box.rsort('category')
-	erb :recipes_by_category, :locals => {:box => box}
+	erb :sorted_recipes, :locals => {:box => box, :attribute => 'category'}
 	return_message[:recipe] = box.first.show
 	return_message.to_json
 end
+
+####### test 9 hits these
+get '/output/:id' do
+	attribute = params[:id]
+	puts attribute
+	return_message = {}
+	if attribute == 1
+		puts "option 1 opened"
+		box.doubleSort('category','name')
+		return_message[:status] = 'category and name'
+	elsif attribute == 2
+		puts "option 2 opened"
+		box.rsort('cooktime')
+		return_message[:status] = "cooktime"
+	elsif attribute == 3
+		puts "option 3 opened"
+		box.doubleSort('servings','cooktime')
+		return_message[:status] = "servings and cooktime"
+	end
+	erb :sorted_recipes, :locals => {:box => box, :attribute => return_message[:status]}
+
+	return_message.to_json
+end
+
+
 
 get '/recipes/only/:category' do
 	subBox = []
@@ -163,26 +192,14 @@ get '/recipes/only/:category' do
 	erb :sorted_recipes, :locals => {:category => params[:category], :box => subBox}	
 end
 
-get '/recipes/cooktime' do
-	cat = "cooktime"
-	box.rsort(cat)
-	erb :sorted_recipes, :locals => {:box => box, :category => cat}
+get '/recipes/:attribute' do
+	return_message = {}
+	attribute = ""
+	attribute = params[:attribute]
+	puts attribute
+	box.rsort(attribute)
+	erb :sorted_recipes, :locals => {:box => box, :attribute => params[:attribute]}
+	return_message[:status] = "#{attribute} sort view loaded"
+	return_message.to_json
 end
 
-get '/recipes/category' do
-	cat = "category"
-	box.rsort('category')
-	erb :sorted_recipes, :locals => {:box => box, :category => cat}
-end
-
-get '/recipes/name' do
-	cat = "name"
-	box.rsort('name')
-	erb :sorted_recipes, :locals => {:box => box, :category => cat}
-end
-
-get '/recipes/servings' do
-	cat = "servings"
-	box.rsort('servings')
-	erb :sorted_recipes, :locals => {:box => box, :category => cat}
-end
