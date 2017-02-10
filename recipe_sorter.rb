@@ -114,16 +114,13 @@ end
 
 ######## controller area ##########
 
-get '/' do
-	"hello dan"
-end
 
-post '/empty_box' do
+post '/api/empty_box' do
 	return_message = {}
 	box.clear ? {status: 'empty success'}.to_json : {status: 'empty failed'}.to_json
 end
 
-get '/get_recipes' do
+get '/api/get_recipes' do
 	return_message = {}
 	if box.loadRecipes
 		return_message[:status] = 'recipes loaded'
@@ -133,7 +130,7 @@ get '/get_recipes' do
 	return_message.to_json
 end
 
-post '/sort' do
+post '/api/sort' do
 	return_message = {}
 	jdata = JSON.parse(params[:data], symbolize_names: true)
 	attribute = jdata[:attribute]
@@ -142,23 +139,14 @@ post '/sort' do
 	return_message.to_json
 end
 
-post '/recipe' do
+post '/api/recipe' do
 	return_message = {}
 	jdata = JSON.parse(params[:data], :symbolize_names => true)
 	box.addRecipe(jdata[:recipe]) ? return_message[:status] = 'addition success' : return_message[:status] = 'addition failure'
 	return_message.to_json
 end
 
-get '/recipes' do
-	return_message = {}
-	box.rsort('category')
-	erb :sorted_recipes, :locals => {:box => box, :attribute => 'category'}
-	return_message[:recipe] = box.first.show
-	return_message.to_json
-end
-
-####### test 9 hits these
-get '/output/:id' do
+get '/api/output/:id' do
 	attribute = params[:id]
 	return_message = {}
 	if attribute == "1"
@@ -171,12 +159,63 @@ get '/output/:id' do
 		box.doubleSort('servings','cooktime')
 		return_message[:status] = "servings and cooktime"
 	end
-	erb :sorted_recipes, :locals => {:box => box, :attribute => return_message[:status]}
-
 	return_message.to_json
 end
 
+get '/api/recipes' do
+	return_message = {}
+	box.rsort('category')
+	return_message[:recipe] = box.first.show
+	return_message.to_json
+end
 
+get '/api/recipes/:attribute' do
+	return_message = {}
+	attribute = params[:attribute]
+	box.rsort(attribute)
+	return_message[:status] = "#{attribute} sort view loaded"
+	return_message.to_json
+end
+############### BROWSER VIEWS ##########
+
+get '/' do
+	"hello dan"
+end
+
+get '/get_recipes' do
+	if box.loadRecipes
+		redirect 'http://localhost:8080/recipes'
+	else
+		"something bad happened"
+	end
+end
+
+get '/output/:id' do
+	attribute = params[:id]
+	if params[:id] == "1"
+		box.doubleSort('category','name')
+		attribute = 'category and name'
+	elsif params[:id] == "2"
+		box.rsort('cooktime')
+		attribute = "cooktime"
+	elsif params[:id] == "3"
+		box.doubleSort('servings','cooktime')
+		attribute = "servings and cooktime"
+	end
+	erb :sorted_recipes, :locals => {:box => box, :attribute => attribute}
+end
+
+get '/recipes' do
+	return_message = {}
+	box.rsort('category')
+	erb :sorted_recipes, :locals => {:box => box, :attribute => 'category'}
+end
+
+get '/recipes/:attribute' do
+	attribute = params[:attribute]
+	box.rsort(attribute)
+	erb :sorted_recipes, :locals => {:box => box, :attribute => params[:attribute]}
+end
 
 get '/recipes/only/:category' do
 	subBox = []
@@ -187,13 +226,3 @@ get '/recipes/only/:category' do
 	end
 	erb :sorted_recipes, :locals => {:category => params[:category], :box => subBox}	
 end
-
-get '/recipes/:attribute' do
-	return_message = {}
-	attribute = params[:attribute]
-	box.rsort(attribute)
-	erb :sorted_recipes, :locals => {:box => box, :attribute => params[:attribute]}
-	return_message[:status] = "#{attribute} sort view loaded"
-	return_message.to_json
-end
-
