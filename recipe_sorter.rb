@@ -24,7 +24,7 @@ class RecipeBox < Array
 				name = recipe_array[0].strip
 				category = recipe_array[1].strip
 				cooktime = recipe_array[2].match(/[\d]+/).to_s.to_i
-				servings = recipe_array[3].strip
+				servings = recipe_array[3].strip.to_i
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -35,7 +35,7 @@ class RecipeBox < Array
 				name = recipe_array[0].strip
 				category = recipe_array[1].strip
 				cooktime = recipe_array[2].match(/[\d]+/).to_s.to_i
-				servings = recipe_array[3].strip
+				servings = recipe_array[3].strip.to_i
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -46,7 +46,7 @@ class RecipeBox < Array
 				name = recipe_array[0].to_s.strip
 				category = recipe_array[1].to_s.strip
 				cooktime = recipe_array[2].to_s.to_i
-				servings = recipe_array[3].to_s.strip
+				servings = recipe_array[3].to_s.strip.to_i
 				newRecipe = Recipe.new(name,category,cooktime,servings)
 				self << newRecipe
 			end
@@ -72,11 +72,7 @@ class RecipeBox < Array
 	end
 
 	def doubleSortDecending(attribute1, attribute2)
-		if attribute1 == ("cooktime" or "servings")
-			self.sort! {|x,y| [y.send(attribute1).to_i, y.send(attribute2).to_i] <=> [x.send(attribute1).to_i, x.send(attribute2).to_i]}
-		else
-			self.sort! {|x,y| [y.send(attribute1), y.send(attribute2)] <=> [x.send(attribute1), x.send(attribute2)]}			
-		end
+		self.sort! {|x,y| [y.send(attribute1), y.send(attribute2)] <=> [x.send(attribute1), x.send(attribute2)]}		
 	end
 
 	def addRecipe(recipeString)
@@ -84,7 +80,7 @@ class RecipeBox < Array
 		name = recipe_array[0].strip
 		category = recipe_array[1].strip
 		cooktime = recipe_array[2].match(/[\d]+/).to_s.to_i
-		servings = recipe_array[3].strip
+		servings = recipe_array[3].strip.to_i
 		self << Recipe.new(name, category, cooktime, servings)
 	end
 
@@ -159,13 +155,13 @@ get '/api/output/:id' do
 	return_message = {}
 	if attribute == "1"
 		box.doubleSort('category','name')
-		return_message[:status] = 'category and name'
+		return_message[:status] = box.first.name
 	elsif attribute == "2"
 		box.rsort('cooktime')
-		return_message[:status] = "cooktime"
+		return_message[:status] = box.first.cooktime
 	elsif attribute == "3"
-		box.doubleSort('servings','cooktime')
-		return_message[:status] = "servings and cooktime"
+		box.doubleSortDecending('servings','cooktime')
+		return_message[:status] = box.first.servings
 	end
 	return_message.to_json
 end

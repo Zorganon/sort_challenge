@@ -86,7 +86,7 @@ class RecipeTests < Test::Unit::TestCase
 		mybox.getRecipes
 		mybox.outputView(1)
 
-		assert_equal("category and name", mybox.message["status"])
+		assert_equal("apple pie", mybox.message["status"])
 	end
 
 	def test10_hits_output_view_2
@@ -95,7 +95,7 @@ class RecipeTests < Test::Unit::TestCase
 		mybox.getRecipes
 		mybox.outputView(2)
 
-		assert_equal("cooktime", mybox.message["status"])
+		assert_equal(8, mybox.message["status"])
 	end
 
 	def test11_hits_output_view_3
@@ -104,7 +104,7 @@ class RecipeTests < Test::Unit::TestCase
 		mybox.getRecipes
 		mybox.outputView(3)
 
-		assert_equal("servings and cooktime", mybox.message["status"])
+		assert_equal(20, mybox.message["status"])
 	end
 
 	def test12_sort_by_params_name
