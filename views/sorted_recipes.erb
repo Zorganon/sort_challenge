@@ -4,6 +4,15 @@
 </head>
 <body>
 	<h1>Recipes Sorted by <%= attribute %></h1>
+	<div class="button-panel">
+		<ul>
+			<li><a href='http://localhost:8080/get_recipes'>Load Recipes</a></li>
+			<li><a href='http://localhost:8080/empty'>Empty the Box</a></li>
+			<li><a href='http://localhost:8080/output/1'>View 1:</a> Category > Name</li>
+			<li><a href='http://localhost:8080/output/2'>View 2:</a> Cooktime</li>
+			<li><a href='http://localhost:8080/output/3'>View 3:</a> Servings > Cooktime, decending</li>
+		</ul>
+	</div>
 	<div class="recipe-list">
 		<table>
 			<tbody>

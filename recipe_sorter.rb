@@ -61,7 +61,7 @@ class RecipeBox < Array
 		elsif attribute == "cooktime"
 			self.sort! {|x,y| x.cooktime.to_i <=> y.cooktime.to_i}
 		elsif attribute == "servings"
-			self.sort! {|x,y| [x.servings, x.cooktime] <=> [y.servings, y.cooktime]}
+			self.sort! {|x,y| [x.servings] <=> [y.servings]}
 		else
 			return "bad search criteria"
 		end
@@ -69,6 +69,14 @@ class RecipeBox < Array
 
 	def doubleSort(attribute1, attribute2)
 		self.sort! {|x,y| [x.send(attribute1), x.send(attribute2)] <=> [y.send(attribute1), y.send(attribute2)]}		
+	end
+
+	def doubleSortDecending(attribute1, attribute2)
+		if attribute1 == ("cooktime" or "servings")
+			self.sort! {|x,y| [y.send(attribute1).to_i, y.send(attribute2).to_i] <=> [x.send(attribute1).to_i, x.send(attribute2).to_i]}
+		else
+			self.sort! {|x,y| [y.send(attribute1), y.send(attribute2)] <=> [x.send(attribute1), x.send(attribute2)]}			
+		end
 	end
 
 	def addRecipe(recipeString)
@@ -190,6 +198,11 @@ get '/get_recipes' do
 	end
 end
 
+get '/empty' do
+	box.clear
+	redirect 'http://localhost:8080/recipes'
+end
+
 get '/output/:id' do
 	attribute = params[:id]
 	if params[:id] == "1"
@@ -199,7 +212,7 @@ get '/output/:id' do
 		box.rsort('cooktime')
 		attribute = "cooktime"
 	elsif params[:id] == "3"
-		box.doubleSort('servings','cooktime')
+		box.doubleSortDecending('servings','cooktime')
 		attribute = "servings and cooktime"
 	end
 	erb :sorted_recipes, :locals => {:box => box, :attribute => attribute}
