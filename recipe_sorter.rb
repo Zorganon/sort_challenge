@@ -224,5 +224,6 @@ get '/recipes/only/:category' do
 			subBox << x
 		end
 	end
+	
 	erb :sorted_recipes, :locals => {:attribute => params[:category], :box => subBox}	
 end
