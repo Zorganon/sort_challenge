@@ -20,16 +20,16 @@ To use the API (after starting the app)
 		ADD : myBox.addRecipe("pipe|delimited|recipe|string")
 		SORT : myBox.sortRecipes(attribute) - attribute can be 'name', 'category', 'cooktime', or 'servings'
 
-To run the tests
+To run the tests once the app is running:
 	$ ruby './recipe_tests.rb'
 
 Browser views:
 	Once the app is running, you can navigate to:
-
-		1. localhost:8080/get_recipes - reads in recipes and redirects to /recipes to display them.
-
-		2. localhost:8080/output/:id - where :id is 1, 2, or 3
-			This sorts the list by:
-				1. Category then Name
-				2. Cooktime
-				3. Servings, Cooktime
+		http://localhost:8080/recipes - this page has buttons for a few options, otherwise check the 
+		
+		'/get_recipes'
+		'/empty'
+		'/output/:id' 				(id can be [1,2,3])
+		'/recipes'
+		'/recipes/:attribute'		(attr can be 'name', 'category', 'cooktime', 'servings')
+		'/recipes/only/:category'
